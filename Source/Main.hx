@@ -87,6 +87,14 @@ class Main extends Sprite {
     paddle1.update();
     ball.update();
 
+    if (ball.hitTestObject(paddle1)) {
+      ball.movement.x = Math.abs(ball.movement.x);
+      ball.x = paddle1.x + 15 + 10;
+    } else if (ball.hitTestObject(paddle2)) {
+      ball.movement.x = -Math.abs(ball.movement.x);
+      ball.x = paddle2.x - 10;
+    }
+
     if (ball.x < 5) { winGame(AI); }
     if (ball.x > 795) { winGame(Human); }
   }
