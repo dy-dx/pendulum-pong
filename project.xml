@@ -6,6 +6,7 @@
 
 	<source path="Source" />
 
+  <haxelib name="box2d" />
 	<haxelib name="openfl" />
 
 	<assets path="Assets" rename="assets" exclude="openfl.svg" />

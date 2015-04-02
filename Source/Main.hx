@@ -10,12 +10,24 @@ import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.text.TextFieldAutoSize;
 
+import box2D.dynamics.B2World;
+import box2D.dynamics.B2Body;
+import box2D.dynamics.B2BodyDef;
+import box2D.dynamics.B2FixtureDef;
+import box2D.common.math.B2Vec2;
+import box2D.collision.B2AABB;
+import box2D.collision.shapes.B2PolygonShape;
+
 enum Player {
   Human;
   AI;
 }
 
 class Main extends Sprite {
+
+  var world : B2World;
+  var worldScale : Int;
+  var groundBody : B2Body;
 
   var paddle1 : Paddle;
   var paddle2 : Paddle;
@@ -30,15 +42,43 @@ class Main extends Sprite {
   var arrowKeyDown : Bool;
 
   function init () {
-    paddle1 = new Paddle();
+    var gravity = new B2Vec2(0, 10.0);
+    world = new B2World(gravity, true);
+    worldScale = 100;
+    var ws = worldScale;
+
+    /*** Ground Box ***/
+
+    var groundBodyDef = new B2BodyDef();
+    groundBodyDef.position.set(400.0/ws, 610.0/ws);
+    var groundShapeDef = new B2PolygonShape();
+    groundShapeDef.setAsBox(400/ws, 10/ws);
+    var groundFixture = new B2FixtureDef();
+    groundFixture.shape = groundShapeDef;
+    var groundBody = world.createBody(groundBodyDef);
+    groundBody.createFixture(groundFixture);
+
+    /*** Ceiling Box ***/
+
+    var ceilingBodyDef = new B2BodyDef();
+    ceilingBodyDef.position.set(400.0/ws, -10.0/ws);
+    var ceilingShapeDef = new B2PolygonShape();
+    ceilingShapeDef.setAsBox(400/ws, 10/ws);
+    var ceilingFixture = new B2FixtureDef();
+    ceilingFixture.shape = ceilingShapeDef;
+    var ceilingBody = world.createBody(ceilingBodyDef);
+    ceilingBody.createFixture(ceilingFixture);
+
+
+    paddle1 = new Paddle(world, worldScale);
     paddle1.x = 35;
     paddle1.y = 250;
 
-    paddle2 = new Paddle();
+    paddle2 = new Paddle(world, worldScale);
     paddle2.x = 750;
     paddle2.y = 250;
 
-    ball = new Ball();
+    ball = new Ball(world, worldScale);
 
     addChild(paddle1);
     addChild(paddle2);
@@ -69,7 +109,7 @@ class Main extends Sprite {
     messageField.y = 530;
     messageField.defaultTextFormat = messageFormat;
     messageField.selectable = false;
-    messageField.text = "Press SPACE to start\nUse ARROW KEYS to move your platform";
+    // messageField.text = "Press SPACE to start\nUse ARROW KEYS to move your platform";
 
     scorePlayer = 0;
     scoreAI = 0;
@@ -84,16 +124,14 @@ class Main extends Sprite {
     if (arrowKeyUp) { paddle1.y -= paddle1.speed; }
     if (arrowKeyDown) { paddle1.y += paddle1.speed; }
 
-    paddle1.update();
-    ball.update();
+    var timeStep = 1.0/60.0;
+    var velocityIterations = 8;
+    var positionIterations = 3;
+    world.step(timeStep, velocityIterations, positionIterations);
 
-    if (ball.hitTestObject(paddle1)) {
-      ball.movement.x = Math.abs(ball.movement.x);
-      ball.x = paddle1.x + 15 + 10;
-    } else if (ball.hitTestObject(paddle2)) {
-      ball.movement.x = -Math.abs(ball.movement.x);
-      ball.x = paddle2.x - 10;
-    }
+    paddle1.update();
+    paddle2.update();
+    ball.update();
 
     if (ball.x < 5) { winGame(AI); }
     if (ball.x > 795) { winGame(Human); }
@@ -110,11 +148,8 @@ class Main extends Sprite {
 
   function startRound () : Void {
     updateScore();
-    ball.x = 400;
-    ball.y = 300;
-    var randomAngle:Float = Math.random() * 2 * Math.PI;
-    ball.movement.x = Math.cos(randomAngle) * ball.speed;
-    ball.movement.y = Math.sin(randomAngle) * ball.speed;
+    ball.setStartingPosition(400, 300);
+    ball.setRandomAngle();
   }
 
   function keyDown (e:KeyboardEvent) : Void {
@@ -140,6 +175,7 @@ class Main extends Sprite {
   public function new () {
     super();
     addEventListener(Event.ADDED_TO_STAGE, added);
+    addChild(new FPS(10, 10, 0xFFFFFF));
   }
 
   function added (e:Event) : Void {
