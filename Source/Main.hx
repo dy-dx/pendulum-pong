@@ -10,6 +10,10 @@ import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.text.TextFieldAutoSize;
 
+enum Player {
+  Human;
+  AI;
+}
 
 class Main extends Sprite {
 
@@ -25,8 +29,6 @@ class Main extends Sprite {
   var arrowKeyUp : Bool;
   var arrowKeyDown : Bool;
 
-  var paddleSpeed : Int;
-
   function init () {
     paddle1 = new Paddle();
     paddle1.x = 35;
@@ -37,8 +39,6 @@ class Main extends Sprite {
     paddle2.y = 250;
 
     ball = new Ball();
-    ball.x = 400;
-    ball.y = 300;
 
     addChild(paddle1);
     addChild(paddle2);
@@ -49,7 +49,6 @@ class Main extends Sprite {
     stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
     arrowKeyUp = false;
     arrowKeyDown = false;
-    paddleSpeed = 7;
 
     // score display
     var scoreFormat = new TextFormat("Verdana", 24, 0xBBBBBB, true);
@@ -75,17 +74,39 @@ class Main extends Sprite {
     scorePlayer = 0;
     scoreAI = 0;
 
-    updateScore();
+    startRound();
 
     // game loop
     this.addEventListener(Event.ENTER_FRAME, update);
   }
 
   function update (e:Event) : Void {
-    if (arrowKeyUp) { paddle1.y -= paddleSpeed; }
-    if (arrowKeyDown) { paddle1.y += paddleSpeed; }
-    if (paddle1.y < 5) { paddle1.y = 5; }
-    if (paddle1.y > 495) { paddle1.y = 495; }
+    if (arrowKeyUp) { paddle1.y -= paddle1.speed; }
+    if (arrowKeyDown) { paddle1.y += paddle1.speed; }
+
+    paddle1.update();
+    ball.update();
+
+    if (ball.x < 5) { winGame(AI); }
+    if (ball.x > 795) { winGame(Human); }
+  }
+
+  function winGame (player:Player) : Void {
+    if (player == Human) {
+      scorePlayer++;
+    } else {
+      scoreAI++;
+    }
+    startRound();
+  }
+
+  function startRound () : Void {
+    updateScore();
+    ball.x = 400;
+    ball.y = 300;
+    var randomAngle:Float = Math.random() * 2 * Math.PI;
+    ball.movement.x = Math.cos(randomAngle) * ball.speed;
+    ball.movement.y = Math.sin(randomAngle) * ball.speed;
   }
 
   function keyDown (e:KeyboardEvent) : Void {
