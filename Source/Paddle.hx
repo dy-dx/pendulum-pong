@@ -19,8 +19,8 @@ class Paddle extends Sprite {
   public function new (world:B2World, worldScale:Int) {
     super();
 
-    speed = 7;
-    y = 250;
+    speed = 8;
+    y = 340;
 
     this.graphics.beginFill(0xFFFFFF);
     this.graphics.drawRect(0, 0, 15, 100);
@@ -49,7 +49,7 @@ class Paddle extends Sprite {
 
     var fixtureDef = new B2FixtureDef();
     fixtureDef.shape = shapeDef;
-    fixtureDef.density = 1.0;
+    fixtureDef.density = 0.0;
     fixtureDef.friction = 0.0;
 
     body = world.createBody(bodyDef);

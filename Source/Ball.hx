@@ -52,8 +52,9 @@ class Ball extends Sprite {
   public function setRandomAngle () : Void {
     var randomAngle:Float = Math.random() * 2 * Math.PI;
     // var xVelocity = Math.cos(randomAngle) * this.speed;
-    var xVelocity = -10;
-    var yVelocity = Math.sin(randomAngle) * this.speed;
+    var xVelocity = -14;
+    // var yVelocity = Math.sin(randomAngle) * this.speed;
+    var yVelocity = 0.0;
     body.setAngle(randomAngle);
     body.setLinearVelocity(new B2Vec2(xVelocity, yVelocity));
   }
@@ -67,10 +68,11 @@ class Ball extends Sprite {
 
     var fixtureDef = new B2FixtureDef();
     fixtureDef.shape = shapeDef;
-    fixtureDef.density = 1.0;
+    // fixtureDef.density = 2.0;
+    fixtureDef.density = 6.0;
     fixtureDef.friction = 0.0;
 
-    fixtureDef.restitution = 1.0;
+    fixtureDef.restitution = 1.2;
 
     body = world.createBody(bodyDef);
     body.createFixture(fixtureDef);

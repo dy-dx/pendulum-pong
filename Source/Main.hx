@@ -44,7 +44,7 @@ class Main extends Sprite {
   var arrowKeyDown : Bool;
 
   function init () {
-    var gravity = new B2Vec2(0, 10.0);
+    var gravity = new B2Vec2(0, 8.0);
     world = new B2World(gravity, true);
     worldScale = 100;
     var ws = worldScale;
@@ -65,7 +65,8 @@ class Main extends Sprite {
     var ceilingBodyDef = new B2BodyDef();
     ceilingBodyDef.position.set(400.0/ws, -10.0/ws);
     var ceilingShapeDef = new B2PolygonShape();
-    ceilingShapeDef.setAsBox(400/ws, 10/ws);
+    // ceilingShapeDef.setAsBox(400/ws, 10/ws);
+    ceilingShapeDef.setAsBox(2/ws, 10/ws);
     var ceilingFixture = new B2FixtureDef();
     ceilingFixture.shape = ceilingShapeDef;
     ceilingBody = world.createBody(ceilingBodyDef);
@@ -74,11 +75,9 @@ class Main extends Sprite {
 
     paddle1 = new Paddle(world, worldScale);
     paddle1.x = 35;
-    paddle1.y = 250;
 
     paddle2 = new Paddle(world, worldScale);
     paddle2.x = 750;
-    paddle2.y = 250;
 
     ball1 = new Ball(world, worldScale);
     ball2 = new Ball(world, worldScale);
@@ -127,10 +126,12 @@ class Main extends Sprite {
   function update (e:Event) : Void {
     if (arrowKeyUp) { paddle1.y -= paddle1.speed; }
     if (arrowKeyDown) { paddle1.y += paddle1.speed; }
+    if (arrowKeyUp) { paddle2.y -= paddle2.speed; }
+    if (arrowKeyDown) { paddle2.y += paddle2.speed; }
 
     var timeStep = 1.0/60.0;
-    var velocityIterations = 8;
-    var positionIterations = 3;
+    var velocityIterations = 20;
+    var positionIterations = 20;
     world.step(timeStep, velocityIterations, positionIterations);
 
     paddle1.update();
@@ -155,12 +156,12 @@ class Main extends Sprite {
 
   function startRound () : Void {
     updateScore();
-    ball1.setStartingPosition(400, 280);
+    ball1.setStartingPosition(400, 380);
     ball1.setRandomAngle();
     ball1.destroyJoint();
     ball1.makeJoint(ceilingBody);
 
-    ball2.setStartingPosition(400, 420);
+    ball2.setStartingPosition(400, 550);
     ball2.setRandomAngle();
     ball2.destroyJoint();
     ball2.makeJoint(ball1.body);
