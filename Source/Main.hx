@@ -28,10 +28,12 @@ class Main extends Sprite {
   var world : B2World;
   var worldScale : Int;
   var groundBody : B2Body;
+  var ceilingBody : B2Body;
 
   var paddle1 : Paddle;
   var paddle2 : Paddle;
-  var ball : Ball;
+  var ball1 : Ball;
+  var ball2 : Ball;
 
   var scorePlayer : Int;
   var scoreAI : Int;
@@ -55,7 +57,7 @@ class Main extends Sprite {
     groundShapeDef.setAsBox(400/ws, 10/ws);
     var groundFixture = new B2FixtureDef();
     groundFixture.shape = groundShapeDef;
-    var groundBody = world.createBody(groundBodyDef);
+    groundBody = world.createBody(groundBodyDef);
     groundBody.createFixture(groundFixture);
 
     /*** Ceiling Box ***/
@@ -66,7 +68,7 @@ class Main extends Sprite {
     ceilingShapeDef.setAsBox(400/ws, 10/ws);
     var ceilingFixture = new B2FixtureDef();
     ceilingFixture.shape = ceilingShapeDef;
-    var ceilingBody = world.createBody(ceilingBodyDef);
+    ceilingBody = world.createBody(ceilingBodyDef);
     ceilingBody.createFixture(ceilingFixture);
 
 
@@ -78,11 +80,13 @@ class Main extends Sprite {
     paddle2.x = 750;
     paddle2.y = 250;
 
-    ball = new Ball(world, worldScale);
+    ball1 = new Ball(world, worldScale);
+    ball2 = new Ball(world, worldScale);
 
     addChild(paddle1);
     addChild(paddle2);
-    addChild(ball);
+    addChild(ball1);
+    addChild(ball2);
 
     // controls
     stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
@@ -131,10 +135,13 @@ class Main extends Sprite {
 
     paddle1.update();
     paddle2.update();
-    ball.update();
+    ball1.update();
+    ball2.update();
 
-    if (ball.x < 5) { winGame(AI); }
-    if (ball.x > 795) { winGame(Human); }
+    if (ball1.x < 5) { winGame(AI); }
+    if (ball1.x > 795) { winGame(Human); }
+    if (ball2.x < 5) { winGame(AI); }
+    if (ball2.x > 795) { winGame(Human); }
   }
 
   function winGame (player:Player) : Void {
@@ -148,8 +155,15 @@ class Main extends Sprite {
 
   function startRound () : Void {
     updateScore();
-    ball.setStartingPosition(400, 300);
-    ball.setRandomAngle();
+    ball1.setStartingPosition(400, 280);
+    ball1.setRandomAngle();
+    ball1.destroyJoint();
+    ball1.makeJoint(ceilingBody);
+
+    ball2.setStartingPosition(400, 420);
+    ball2.setRandomAngle();
+    ball2.destroyJoint();
+    ball2.makeJoint(ball1.body);
   }
 
   function keyDown (e:KeyboardEvent) : Void {

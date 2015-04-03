@@ -9,6 +9,9 @@ import box2D.dynamics.B2BodyDef;
 import box2D.dynamics.B2FixtureDef;
 import box2D.common.math.B2Vec2;
 import box2D.collision.shapes.B2CircleShape;
+import box2D.dynamics.joints.B2DistanceJointDef;
+import box2D.dynamics.joints.B2DistanceJoint;
+import box2D.dynamics.joints.B2Joint;
 
 class Ball extends Sprite {
 
@@ -17,6 +20,7 @@ class Ball extends Sprite {
   public var world : B2World;
   public var body : B2Body;
   var worldScale : Int;
+  var joint : B2Joint;
 
   public function new (world:B2World, worldScale:Int) {
     super();
@@ -47,7 +51,8 @@ class Ball extends Sprite {
 
   public function setRandomAngle () : Void {
     var randomAngle:Float = Math.random() * 2 * Math.PI;
-    var xVelocity = Math.cos(randomAngle) * this.speed;
+    // var xVelocity = Math.cos(randomAngle) * this.speed;
+    var xVelocity = -10;
     var yVelocity = Math.sin(randomAngle) * this.speed;
     body.setAngle(randomAngle);
     body.setLinearVelocity(new B2Vec2(xVelocity, yVelocity));
@@ -69,6 +74,20 @@ class Ball extends Sprite {
 
     body = world.createBody(bodyDef);
     body.createFixture(fixtureDef);
+  }
+
+  public function makeJoint (body2:B2Body) : Void {
+    if (joint != null) { throw "yo what"; }
+    var jointDef = new B2DistanceJointDef();
+    jointDef.initialize(this.body, body2, this.body.getPosition(), body2.getWorldCenter());
+    jointDef.collideConnected = false;
+    joint = world.createJoint(jointDef);
+  }
+
+  public function destroyJoint () : Void {
+    if (joint == null) { return; }
+    world.destroyJoint(joint);
+    joint = null;
   }
 
 }
