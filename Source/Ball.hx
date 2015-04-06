@@ -16,7 +16,6 @@ import box2D.dynamics.joints.B2Joint;
 class Ball extends Sprite {
 
   public var speed : Int;
-  public var movement : Point;
   public var world : B2World;
   public var body : B2Body;
   var worldScale : Int;
@@ -27,7 +26,6 @@ class Ball extends Sprite {
 
     // attributes
     speed = 7;
-    movement = new Point(0, 0);
 
     // graphics
     this.graphics.beginFill(0xFFFFFF);
