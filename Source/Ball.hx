@@ -70,7 +70,7 @@ class Ball extends Sprite {
     fixtureDef.density = 6.0;
     fixtureDef.friction = 0.0;
 
-    fixtureDef.restitution = 1.2;
+    fixtureDef.restitution = 1.25;
 
     body = world.createBody(bodyDef);
     body.createFixture(fixtureDef);

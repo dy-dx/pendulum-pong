@@ -130,8 +130,8 @@ class Main extends Sprite {
     if (arrowKeyDown) { paddle2.y += paddle2.speed; }
 
     var timeStep = 1.0/60.0;
-    var velocityIterations = 20;
-    var positionIterations = 20;
+    var velocityIterations = 10;
+    var positionIterations = 10;
     world.step(timeStep, velocityIterations, positionIterations);
 
     paddle1.update();
